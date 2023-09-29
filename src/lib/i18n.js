@@ -13,6 +13,6 @@ register('ru', () => import('./locales/ru.json'));
 register('zh', () => import('./locales/zh.json'));
 
 init({
-    initialLocale: getLocaleFromNavigator(),
-    fallbackLocale: fallback
+    fallbackLocale: fallback,
+    initialLocale: getLocaleFromNavigator()
 });

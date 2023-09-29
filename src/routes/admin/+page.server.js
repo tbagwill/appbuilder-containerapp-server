@@ -1,10 +1,5 @@
 /** @type {import('./$types').Actions} */
-
-import { db } from '$lib/fbconfig';
 import { initInterface } from '$lib/stores';
-import { auth } from '$lib/fbconfig';
-import { doc, updateDoc } from 'firebase/firestore';
-import { signInAnonymously } from 'firebase/auth';
 import { redirect } from '@sveltejs/kit';
 
 export const actions = {

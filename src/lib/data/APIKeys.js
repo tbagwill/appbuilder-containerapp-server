@@ -1,5 +1,3 @@
-import { db } from '$lib/fbconfig';
-import { collection, doc, addDoc, deleteDoc } from 'firebase/firestore';
 import { initKeys } from '$lib/stores';
 import toast from 'svelte-french-toast';
 

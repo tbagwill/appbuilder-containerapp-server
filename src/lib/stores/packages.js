@@ -1,23 +1,18 @@
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { writable, derived } from 'svelte/store';
-import { db } from '../fbconfig';
+import { supabase } from '$lib/supabaseClient';
 import toast from 'svelte-french-toast';
 
 export const allPackages = writable([]);
 
 export async function initPackages() {
-    const colq = collection(db, 'packages');
+    let { data: packages, error: err } = await supabase.from('packages').select('*');
+    let loadedPacks = [];
 
-    const snapshot = await getDocs(colq);
+    packages.map((pack) => {
+        loadedPacks.push(pack.document);
+    });
 
-    const loadedPack = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .map((project) => ({
-            ...project,
-            img: project.image.baseurl + '/' + project.image.files[0].src
-        }));
-
-    allPackages.set(loadedPack);
+    allPackages.set(loadedPacks);
 }
 
 export const incomingPackages = derived([allPackages], ([$packages]) => {
@@ -29,46 +24,9 @@ export const activePackages = derived([allPackages], ([$packages]) => {
 });
 
 export async function activatePackage(id) {
-    const timestamp = new Date().toISOString();
-    const docRef = doc(db, 'packages', id);
-
-    allPackages.update((packages) => {
-        return packages.map((obj) => {
-            if (obj.id === id) {
-                return {
-                    ...obj,
-                    accepted: timestamp
-                };
-            }
-            return obj;
-        });
-    });
-
-    await updateDoc(docRef, {
-        accepted: timestamp
-    });
-
     toast.success('Package status changed.');
 }
 
 export async function deactivatePackage(id) {
-    const docRef = doc(db, 'packages', id);
-
-    allPackages.update((packages) => {
-        return packages.map((obj) => {
-            if (obj.id === id) {
-                return {
-                    ...obj,
-                    accepted: ''
-                };
-            }
-            return obj;
-        });
-    });
-
-    await updateDoc(docRef, {
-        accepted: ''
-    });
-
     toast.success('Package status changed.');
 }

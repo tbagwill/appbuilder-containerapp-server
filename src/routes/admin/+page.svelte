@@ -1,8 +1,4 @@
 <script>
-    import { auth, db } from '$lib/fbconfig';
-    import { doc, getDoc } from 'firebase/firestore';
-    import { goto } from '$app/navigation';
-    import { onMount } from 'svelte';
     import { updateUserRole } from '$lib/data/AuthFunctions';
     import {
         allKeys,
@@ -28,7 +24,8 @@
     import { enhance } from '$app/forms';
     import ThemePreview from '$lib/components/ThemePreview.svelte';
 
-    let user = null;
+    export let data;
+    let user = data.session.user;
     let message = '';
     let customKey = '';
 
@@ -65,52 +62,6 @@
             document.documentElement.setAttribute('data-theme', theme);
         }
     };
-
-    onMount(() => {
-        auth.onAuthStateChanged(async (userData) => {
-            if (!userData) {
-                // If unauthenticated, redirect the user to the login page
-                goto('/login');
-            } else {
-                // Store auth user data in user object and call for additional user data
-                user = userData;
-                const userRef = doc(db, 'users', userData.uid);
-                const userSnapshot = await getDoc(userRef);
-
-                // If additional info is found, update current user store
-                if (userSnapshot.exists()) {
-                    const userData = userSnapshot.data();
-                    if (userData.role === 'user' || userData.role === 'admin') {
-                        currUser.set({
-                            ...userData,
-                            uid: user.uid,
-                            userInitials: `${userData.firstname
-                                .toUpperCase()
-                                .charAt(0)}${userData.lastname.toUpperCase().charAt(0)}`
-                        });
-
-                        // check if user has administrative priviledges
-                        if ($currUser.role !== 'admin') {
-                            currUser.set({
-                                ...$currUser,
-                                isAdmin: false
-                            });
-                        } else {
-                            currUser.set({
-                                ...$currUser,
-                                isAdmin: true
-                            });
-                        }
-                    } else {
-                        message =
-                            "Sorry, but you don't have permissions yet! Please contact an administrator for access.";
-                    }
-                } else {
-                    message = 'User information could not be found.';
-                }
-            }
-        });
-    });
 </script>
 
 <svelte:head>
@@ -123,12 +74,14 @@
     </div>
 {/if}
 
-{#if user && !message}
-    <!-- DASHBOARD -->
+admin
+
+<!-- {#if user && !message}
+    DASHBOARD
     {#if $currPage === 'Dashboard'}
         <h1 class="text-base-content">Welcome to the Home Page</h1>
 
-        <!-- ACTIVE PACKAGES -->
+        ACTIVE PACKAGES
     {:else if $currPage === 'Active Packages'}
         <div class="overflow-x-auto w-full">
             {#if $activePackages.length > 0}
@@ -178,7 +131,7 @@
             {/if}
         </div>
 
-        <!-- INCOMING PACKAGES -->
+        INCOMING PACKAGES
     {:else if $currPage === 'Incoming Packages'}
         <div class="overflow-x-auto w-full">
             {#if $incomingPackages.length > 0}
@@ -254,7 +207,7 @@
                                         <option value="none">None</option>
                                         <option value="user">User</option>
                                         <option value="admin">Admin</option>
-                                        <!-- Add more roles here if needed -->
+                                        Add more roles here if needed
                                     </select>
                                 </td>
                             </tr>
@@ -268,7 +221,7 @@
     {:else if $currPage === 'API Keys'}
         <div class="overflow-x-auto w-full m-1 p-1 lg:w-3/4">
             <div class="form-control w-full m-1 p-1 max-w-xs sm:max-w-md lg:w-3/4">
-                <!-- svelte-ignore a11y-label-has-associated-control -->
+                svelte-ignore a11y-label-has-associated-control
                 <label class="label">
                     <span class="label-text">Add new custom key or Auto-Generate Key:</span>
                     <button
@@ -411,7 +364,7 @@
             </div>
         </div>
     {/if}
-{/if}
+{/if} -->
 
 <style>
     .message-container {

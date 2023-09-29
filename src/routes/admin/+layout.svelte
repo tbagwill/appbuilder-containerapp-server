@@ -1,7 +1,6 @@
 <script>
     import { HamburgerIcon, LogoutIcon, SettingsIcon } from '$lib/icons';
     import { goHome } from '$lib/data/NavigationFunctions';
-    import { logOut } from '$lib/data/AuthFunctions';
     import { currPage, currUser, updatePage, incomingPackages } from '$lib/stores';
 </script>
 
@@ -21,11 +20,7 @@
     <div class="navbar-end mr-4">
         <details class="dropdown dropdown-end">
             <summary tabIndex="0" class="btn btn-ghost btn-md rounded-lg normal-case text-xl">
-                {#if !$currUser.userInitials}
-                    <span class="loading loading-spinner loading-md" />
-                {:else}
-                    {$currUser.userInitials}
-                {/if}
+                <span class="loading loading-spinner loading-md" />
             </summary>
             <ul
                 class="menu dropdown-content z-[1] bg-base-200 mt-2 p-0 rounded-b-xl justify-center align-middle"
@@ -34,14 +29,13 @@
                     <a
                         data-tip="Settings"
                         class="btn btn-md btn-ghost tooltip tooltip-left"
-                        href="/admin/settings/{$currUser.uid}"><SettingsIcon /></a
+                        href="/admin/settings/userid"><SettingsIcon /></a
                     >
                 </li>
                 <li>
                     <a
                         data-tip="Log out"
                         class="btn btn-md btn-ghost tooltip tooltip-left rounded-b-xl"
-                        on:click={() => logOut()}
                         href="/#"><LogoutIcon color="red" /></a
                     >
                 </li>
@@ -88,32 +82,32 @@
                     >
                 </button>
             </li>
-            {#if $currUser.isAdmin}
-                <li>
-                    <button on:click={() => updatePage('Users')}>
-                        {#if $currPage === 'Users'}
-                            <span class="loading loading-ring loading-xs text-secondary" />
-                        {/if}
-                        Users
-                    </button>
-                </li>
-                <li>
-                    <button on:click={() => updatePage('API Keys')}>
-                        {#if $currPage === 'API Keys'}
-                            <span class="loading loading-ring loading-xs text-secondary" />
-                        {/if}
-                        API Keys
-                    </button>
-                </li>
-                <li>
-                    <button on:click={() => updatePage('Interface Preferences')}>
-                        {#if $currPage === 'Interface Preferences'}
-                            <span class="loading loading-ring loading-xs text-secondary" />
-                        {/if}
-                        Interface Preferences
-                    </button>
-                </li>
-            {/if}
+            <!-- {#if $currUser.isAdmin} -->
+            <li>
+                <button on:click={() => updatePage('Users')}>
+                    {#if $currPage === 'Users'}
+                        <span class="loading loading-ring loading-xs text-secondary" />
+                    {/if}
+                    Users
+                </button>
+            </li>
+            <li>
+                <button on:click={() => updatePage('API Keys')}>
+                    {#if $currPage === 'API Keys'}
+                        <span class="loading loading-ring loading-xs text-secondary" />
+                    {/if}
+                    API Keys
+                </button>
+            </li>
+            <li>
+                <button on:click={() => updatePage('Interface Preferences')}>
+                    {#if $currPage === 'Interface Preferences'}
+                        <span class="loading loading-ring loading-xs text-secondary" />
+                    {/if}
+                    Interface Preferences
+                </button>
+            </li>
+            <!-- {/if} -->
         </ul>
     </div>
 </div>

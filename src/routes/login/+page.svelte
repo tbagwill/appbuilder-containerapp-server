@@ -1,51 +1,77 @@
 <script>
-    import SignIn from '$lib/components/login/loginForm.svelte';
-    import { signInWithEmailAndPassword } from 'firebase/auth';
-    import { auth } from '$lib/fbconfig';
-    import { goto } from '$app/navigation';
-    import toast from 'svelte-french-toast';
+    import { VisibleIcon, VisibleOffIcon } from '$lib/icons';
+    import { superForm } from 'sveltekit-superforms/client';
 
-    let error;
+    export let data;
+    export let form;
+    let visible = false;
 
-    async function signIn(event) {
-        try {
-            let user = await signInWithEmailAndPassword(
-                auth,
-                event.detail.email,
-                event.detail.password
-            );
-            await goto('/admin');
-        } catch (err) {
-            toast.error('Error signing in.');
-        }
+    function toggleVisibility() {
+        visible = !visible;
+        if (visible) document.getElementById('password').setAttribute('type', 'text');
+        else document.getElementById('password').setAttribute('type', 'password');
     }
+
+    const { form: loginForm, errors, enhance } = superForm(data.loginForm, { resetForm: false });
 </script>
 
 <svelte:head>
     <title>Login</title>
 </svelte:head>
 
-<div class="flex flex-col w-full justify-center">
-    <div class="flex text-4xl font-bold justify-center m-2 p-2">
-        <h4>Welcome Back!</h4>
-    </div>
-
-    <div class="flex w-full justify-center">
-        {#if error}
-            <div>
-                <p>{error}</p>
+<div class="flex flex-col w-full justify-center items-center p-8 mt-8">
+    <div class="card w-11/12 md:w-3/4 flex flex-col items-center rounded-xl bg-primary p-8">
+        <div class="card-title text-xl md:text-3xl text-center font-bold">Login</div>
+        <form class="w-11/12 md:w-3/4" name="login" method="POST" action="?/login" use:enhance>
+            <div class="card-body p-0 mt-6 flex flex-col w-full">
+                <label for="email" class="label text-sm label-text"> Email: </label>
+                <input
+                    class="input input-secondary text-sm font-semibold w-full p-2 pl-4 rounded-full"
+                    title="Input (email)"
+                    name="email"
+                    type="email"
+                    placeholder="john@example.com"
+                    autocomplete="email"
+                />
+                {#if $errors.email}<span class="text-error">{$errors.email}</span>{/if}
+                <label for="password" class="label"> Password: </label>
+                <div class="join w-full">
+                    <input
+                        class="join-item input input-secondary text-sm font-semibold w-full p-2 pl-4 rounded-full"
+                        title="Input (password)"
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                    />
+                    <button
+                        class="btn join-item rounded-full btn-outline btn-secondary btn-ghost"
+                        type="button"
+                        on:click={toggleVisibility}
+                    >
+                        {#if visible}
+                            <VisibleOffIcon color="hsl(var(--bc))" />
+                        {:else}
+                            <VisibleIcon color="hsl(var(--bc))" />
+                        {/if}
+                    </button>
+                </div>
+                {#if $errors.password}<span class="text-error">{$errors.password}</span>{/if}
             </div>
-        {/if}
-
-        <SignIn on:login={signIn} />
-    </div>
-
-    <div class="flex justify-center items-center gap-2 mt-4">
-        Don't have an account? <a class="link link-hover" href="/signup"> Sign Up </a>
-    </div>
-    <div class="flex justify-center items-center gap-2 mt-4">
-        <button class="btn btn-wide btn-ghost rounded-xl hover:underline hover:bg-base-100">
-            Forgot your password?
-        </button>
+            {#if form?.invalid}
+                <aside class="alert alert-error rounded-xl p-4 mt-8">
+                    <h3 class="h3 font-bold">Uh oh!</h3>
+                    <p>Could not log you in. Please try again.</p>
+                </aside>
+            {/if}
+            <button
+                class="btn w-full btn-outline text-lg font-bold btn-md rounded-full mt-8"
+                formaction="?/login"
+                type="submit"
+            >
+                Login
+            </button>
+        </form>
     </div>
 </div>

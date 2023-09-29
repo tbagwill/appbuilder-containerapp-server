@@ -1,6 +1,6 @@
-import { db } from '$lib/fbconfig';
-import { doc, getDoc } from 'firebase/firestore';
 import { writable } from 'svelte/store';
+
+let loadedPref;
 
 export const interfacePref = writable({
     homeImage: '/earth_cut.png',
@@ -9,8 +9,7 @@ export const interfacePref = writable({
 });
 
 export async function initInterface() {
-    const docRef = doc(db, 'interface', 'primary');
-    const snap = await getDoc(docRef);
-    const preferences = snap.data();
-    interfacePref.set(preferences);
+    if (loadedPref) {
+        interfacePref.set(loadedPref);
+    }
 }
